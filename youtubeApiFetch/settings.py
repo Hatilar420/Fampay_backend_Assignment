@@ -16,6 +16,7 @@ import environ
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 env = environ.Env()
+environ.Env.read_env()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
@@ -38,6 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'youtubeApiFetch.coreApi',
+    'youtubeApiFetch.Domain',
+    'youtubeApiFetch.Services'
 ]
 
 MIDDLEWARE = [
@@ -119,11 +123,23 @@ DEVELOPER_KEYS = []
 YOUTUBE_API_SERVICE_NAME = 'youtube'
 YOUTUBE_API_VERSION = 'v3'
 DEFAULT_QUERY = ''
-NUM_KEYS = env('NUM_KEYS')
+NUM_KEYS = int(env('NUM_KEYS'))
 for i in range(1,NUM_KEYS+1):
-    key_name = 'DEV_KEY_{i}'.format(i)
+    key_name = 'DEV_KEY_{0}'.format(i)
     DEVELOPER_KEYS.append(env(key_name))
 
+
+# celery
+CELERY_IMPORTS = ('youtubeApiFetch.Services.celeryTasks',)
+# CELERY_BROKER_URL=env('CELERY_BROKER_URL')
+# CELERY_RESULT_BACKEND=env('CELERY_RESULT_BACKEND')
+CELERY_BROKER_BACKEND = "db+sqlite:///celery.sqlite"
+CELERY_CACHE_BACKEND = "db+sqlite:///celery.sqlite"
+CELERY_RESULT_BACKEND = "db+sqlite:///celery.sqlite"
+# CELERY_ACCEPT_CONTENT=['application/json']
+# CELERY_TASK_SERIALIZER='json'
+# CELERY_RESULT_SERIALIZER='json'
+CELERY_TIMEZONE='Asia/Kolkata'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/

@@ -11,3 +11,4 @@ class Youtube_Video_Summary(models.Model):
 
     def __str__(self):
         return self.video_title
+
