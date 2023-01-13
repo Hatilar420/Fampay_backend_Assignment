@@ -10,5 +10,5 @@ class Youtube_Video_Summary(models.Model):
     published_on = models.DateTimeField("publishing datetime")
 
     def __str__(self):
-        return self.video_title
+        return self.title
 

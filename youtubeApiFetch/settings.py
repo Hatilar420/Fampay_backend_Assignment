@@ -9,8 +9,9 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
-from celery.schedules import crontab
+
 from pathlib import Path
+from celery.schedules import crontab
 import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -39,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_celery_beat',
     'youtubeApiFetch.coreApi',
     'youtubeApiFetch.Domain',
     'youtubeApiFetch.Services'
@@ -79,10 +81,14 @@ WSGI_APPLICATION = 'youtubeApiFetch.wsgi.application'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+   'default': {
+       'ENGINE': 'django.db.backends.postgresql_psycopg2',
+       'NAME': env('DB_NAME'),
+       'USER': env('DB_USER'),
+       'PASSWORD': env('DB_PASS'),
+       'HOST': env('DB_HOST'),
+       'PORT': env('DB_PORT'),
+   }
 }
 
 
@@ -122,7 +128,7 @@ USE_TZ = True
 DEVELOPER_KEYS = []
 YOUTUBE_API_SERVICE_NAME = 'youtube'
 YOUTUBE_API_VERSION = 'v3'
-DEFAULT_QUERY = ''
+DEFAULT_QUERY = env('DEFAULT_QUERY')
 NUM_KEYS = int(env('NUM_KEYS'))
 for i in range(1,NUM_KEYS+1):
     key_name = 'DEV_KEY_{0}'.format(i)
@@ -130,20 +136,24 @@ for i in range(1,NUM_KEYS+1):
 
 
 # celery
+INTERVAL = env("INTERVAL")
 CELERY_IMPORTS = ('youtubeApiFetch.Services.celeryTasks')
-CELERY_BROKER_BACKEND = "db+sqlite:///celery.sqlite"
-CELERY_CACHE_BACKEND = "db+sqlite:///celery.sqlite"
-CELERY_RESULT_BACKEND = "db+sqlite:///celery.sqlite"
-CELERY_TIMEZONE='Asia/Kolkata'
+CELERY_BROKER_URL = env('CELERY_BROKER_URL')
+CELERY_RESULT_BACKEND = env('CELERY_RESULT_BACKEND')
 CELERY_BEAT_SCHEDULE = {
-    "collect_videos": {
+    "update_db_task": {
         "task": "youtubeApiFetch.Services.celeryTasks.collect_videos",
-        "schedule": crontab(minute='*/2'),
-    }
+        "schedule": crontab(minute=f'*/{INTERVAL}'),
+    },
 }
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
+
+REST_FRAMEWORK = {
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 10,
+}
 
 STATIC_URL = 'static/'
 
