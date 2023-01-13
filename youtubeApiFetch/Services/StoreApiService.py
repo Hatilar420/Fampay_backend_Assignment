@@ -1,10 +1,13 @@
 from youtubeApiFetch.Services.searchService import YoutubeSearch
 from youtubeApiFetch.coreApi import models
 from dateutil import parser
+from celery.utils.log import get_task_logger
+
+logger = get_task_logger(__name__)
 
 def StoreApiService():
     search_res = YoutubeSearch(interval=2, max_res=25)
-    # logger.info("Successfully Fetched Videos")
+    logger.info("Successfully Fetched Videos")
     for item in search_res.get("items", []):
         if all(
             [
@@ -22,6 +25,5 @@ def StoreApiService():
                 'thumbnail_url' : snippet["thumbnails"]["default"]["url"],
                 'published_on' : parser.parse(snippet["publishedAt"])
             }
-            models.Youtube_Video_Summary(**model_dic)
-            models.Youtube_Video_Summary.save()
-    # logger.info("Successfully Updated Videos DB")
+            models.Youtube_Video_Summary(**model_dic).save()
+    logger.info("Successfully Updated Videos DB")

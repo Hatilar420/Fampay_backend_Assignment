@@ -19,11 +19,10 @@ def YoutubeSearch(query = DEFAULT_QUERY , interval = 1 , max_res = 50 ):
             search = youtube.search().list(
                 q = query,
                 part = 'id,snippet',
-                published_After = datetime.now() - timedelta(minutes=interval).isoformat() + 'Z',
+                publishedAfter = (datetime.now() - timedelta(minutes=interval)).isoformat() + "Z",
                 order = 'date',
-                max_results = max_res
+                maxResults = max_res
             ).execute()
-            print(search)
             return search
         except HttpError as e :
             Status_Code = e.resp.status

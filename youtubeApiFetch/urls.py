@@ -15,7 +15,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-
+from youtubeApiFetch.coreApi.views import video_collection
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/videos', video_collection, name="video_collection")
 ]

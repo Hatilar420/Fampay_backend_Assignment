@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
-
+from celery.schedules import crontab
 from pathlib import Path
 import environ
 
@@ -130,16 +130,17 @@ for i in range(1,NUM_KEYS+1):
 
 
 # celery
-CELERY_IMPORTS = ('youtubeApiFetch.Services.celeryTasks',)
-# CELERY_BROKER_URL=env('CELERY_BROKER_URL')
-# CELERY_RESULT_BACKEND=env('CELERY_RESULT_BACKEND')
+CELERY_IMPORTS = ('youtubeApiFetch.Services.celeryTasks')
 CELERY_BROKER_BACKEND = "db+sqlite:///celery.sqlite"
 CELERY_CACHE_BACKEND = "db+sqlite:///celery.sqlite"
 CELERY_RESULT_BACKEND = "db+sqlite:///celery.sqlite"
-# CELERY_ACCEPT_CONTENT=['application/json']
-# CELERY_TASK_SERIALIZER='json'
-# CELERY_RESULT_SERIALIZER='json'
 CELERY_TIMEZONE='Asia/Kolkata'
+CELERY_BEAT_SCHEDULE = {
+    "collect_videos": {
+        "task": "youtubeApiFetch.Services.celeryTasks.collect_videos",
+        "schedule": crontab(minute='*/2'),
+    }
+}
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
