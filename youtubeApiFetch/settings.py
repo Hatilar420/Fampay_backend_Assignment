@@ -152,7 +152,7 @@ CELERY_BEAT_SCHEDULE = {
 
 REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
-    "PAGE_SIZE": 10,
+    "PAGE_SIZE": env('PAGE_LIMIT'),
 }
 
 STATIC_URL = 'static/'
