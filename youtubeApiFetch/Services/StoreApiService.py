@@ -6,7 +6,7 @@ from celery.utils.log import get_task_logger
 logger = get_task_logger(__name__)
 
 def StoreApiService():
-    search_res = YoutubeSearch(interval=2, max_res=25)
+    search_res = YoutubeSearch(interval=2)
     logger.info("Successfully Fetched Videos")
     for item in search_res.get("items", []):
         if all(
